@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Chat App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar-toggle" id="sidebar-toggle">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Users</h2>
+            </div>
+            <div class="user-list" id="users"></div>
+            <div class="friend-requests">
+                <h3>Friend Requests</h3>
+                <div id="friend-requests-list"></div>
+            </div>
+        </div>
+        
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>Real-time Chat</h1>
+            </div>
+            
+            <div class="chat-messages" id="messages"></div>
+            
+            <div class="typing-indicator" id="typing-indicator"></div>
+            
+            <div class="chat-input-container">
+                <input type="text" id="message-input" placeholder="Type a message...">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="username-modal" class="modal">
+        <div class="modal-content">
+            <h2>Enter Your Username</h2>
+            <input type="text" id="username-input" placeholder="Username">
+            <button id="join-button">Join Chat</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 
