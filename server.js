@@ -234,6 +234,34 @@ io.on('connection', (socket) => {
         });
     });
 
+    // Handle private messages
+    socket.on('privateMessage', ({ to, text }) => {
+        const fromUser = users.get(socket.id);
+        if (!fromUser) return;
+
+        const target = Array.from(users.entries())
+            .find(([_, user]) => user.username === to);
+        
+        if (target) {
+            const targetSocket = target[0];
+            const time = new Date().toLocaleTimeString();
+            
+            // Send to recipient
+            io.to(targetSocket).emit('privateMessage', {
+                from: fromUser.username,
+                text,
+                time
+            });
+            
+            // Echo back to sender
+            socket.emit('privateMessage', {
+                from: fromUser.username,
+                text,
+                time
+            });
+        }
+    });
+
     // Handle voice notes
     socket.on('voiceNote', (audioDataUrl) => {
         const { username } = users.get(socket.id);

@@ -1,6 +1,12 @@
 const socket = io();
 let username = '';
 
+// State management for DM
+let currentTab = 'group';
+let selectedDM = null;
+const dmHistory = {}; // { friendUsername: [{user, text, time, seen}] }
+const dmUnseen = {};  // { friendUsername: count }
+
 // DOM Elements
 const usernameModal = document.getElementById('username-modal');
 const usernameInput = document.getElementById('username-input');
@@ -9,10 +15,82 @@ const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 const messagesDiv = document.getElementById('messages');
 const usersDiv = document.getElementById('users');
+const dmListDiv = document.getElementById('dm-list');
 const friendRequestsList = document.getElementById('friend-requests-list');
 const typingIndicator = document.getElementById('typing-indicator');
 const sidebar = document.getElementById('sidebar');
 const sidebarToggle = document.getElementById('sidebar-toggle');
+const tabGroup = document.getElementById('tab-group');
+const tabDM = document.getElementById('tab-dm');
+
+// Tab switching
+tabGroup.addEventListener('click', () => switchTab('group'));
+tabDM.addEventListener('click', () => switchTab('dm'));
+
+function switchTab(tab) {
+    currentTab = tab;
+    tabGroup.classList.toggle('active', tab === 'group');
+    tabDM.classList.toggle('active', tab === 'dm');
+    usersDiv.style.display = tab === 'group' ? '' : 'none';
+    dmListDiv.style.display = tab === 'dm' ? '' : 'none';
+    messagesDiv.innerHTML = '';
+    typingIndicator.style.display = 'none';
+    if (tab === 'group') {
+        // Re-render last group messages
+        socket.emit('getGroupMessages');
+    } else {
+        renderDMList();
+    }
+}
+
+function renderDMList() {
+    dmListDiv.innerHTML = '';
+    const users = Array.from(usersDiv.children).map(el => ({
+        username: el.querySelector('.user-info span:last-child').textContent,
+        online: !el.querySelector('.online-status').classList.contains('offline'),
+        relationInt: el.querySelector('.friend-status')?.classList.contains('friend-status') ? 2 : 0
+    }));
+
+    users.forEach(user => {
+        if (user.username !== username && user.relationInt === 2) {
+            dmHistory[user.username] = dmHistory[user.username] || [];
+            dmUnseen[user.username] = dmUnseen[user.username] || 0;
+            const item = document.createElement('div');
+            item.className = 'user-item';
+            item.innerHTML = `
+                <div class="user-info">
+                    <span class="online-status ${user.online ? '' : 'offline'}"></span>
+                    <span>${user.username}</span>
+                </div>
+                ${dmUnseen[user.username] ? `<span class="unseen-badge">${dmUnseen[user.username]}</span>` : ''}
+            `;
+            item.addEventListener('click', () => openDM(user.username));
+            dmListDiv.appendChild(item);
+        }
+    });
+}
+
+function openDM(friend) {
+    selectedDM = friend;
+    messagesDiv.innerHTML = '';
+    dmUnseen[friend] = 0;
+    renderDMList();
+    dmHistory[friend].forEach(msg => addMessageToDOM(msg, true));
+}
+
+function addMessageToDOM(msg, isSent) {
+    const el = document.createElement('div');
+    el.className = `message ${msg.user === username ? 'sent' : 'received'}`;
+    el.innerHTML = `
+        <div class="message-header">
+            <span class="message-user">${msg.user}</span>
+            <span class="message-time">${msg.time}</span>
+        </div>
+        <div class="message-content">${msg.text}</div>
+    `;
+    messagesDiv.appendChild(el);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
 
 // Join chat
 joinButton.addEventListener('click', () => {
@@ -38,10 +116,22 @@ messageInput.addEventListener('keypress', (e) => {
 
 function sendMessage() {
     const message = messageInput.value.trim();
-    if (message) {
+    if (!message) return;
+
+    if (currentTab === 'group') {
         socket.emit('chatMessage', message);
-        messageInput.value = '';
+    } else if (selectedDM) {
+        socket.emit('privateMessage', { to: selectedDM, text: message });
+        const msg = {
+            user: username,
+            text: message,
+            time: new Date().toLocaleTimeString(),
+            seen: true
+        };
+        dmHistory[selectedDM].push(msg);
+        addMessageToDOM(msg, true);
     }
+    messageInput.value = '';
 }
 
 // Handle typing indicator
@@ -190,6 +280,24 @@ socket.on('friendRequest', ({ from }) => {
         });
         requestElement.remove();
     });
+});
+
+// Handle private messages
+socket.on('privateMessage', ({ from, text, time }) => {
+    const msg = {
+        user: from,
+        text,
+        time,
+        seen: (currentTab === 'dm' && selectedDM === from)
+    };
+    dmHistory[from] = dmHistory[from] || [];
+    dmHistory[from].push(msg);
+    if (currentTab === 'dm' && selectedDM === from) {
+        addMessageToDOM(msg, false);
+    } else {
+        dmUnseen[from] = (dmUnseen[from] || 0) + 1;
+        renderDMList();
+    }
 });
 
 // Handle messages

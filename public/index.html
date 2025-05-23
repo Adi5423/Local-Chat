@@ -18,6 +18,7 @@
                 <h2>Users</h2>
             </div>
             <div class="user-list" id="users"></div>
+            <div id="dm-list" class="user-list" style="display:none;"></div>
             <div class="friend-requests">
                 <h3>Friend Requests</h3>
                 <div id="friend-requests-list"></div>
@@ -26,7 +27,10 @@
         
         <div class="chat-container">
             <div class="chat-header">
-                <h1>Real-time Chat</h1>
+                <div class="chat-tabs">
+                    <button id="tab-group" class="tab active"><i class="fas fa-users"></i> Group Chat</button>
+                    <button id="tab-dm" class="tab"><i class="fas fa-user-circle"></i> Direct Messages</button>
+                </div>
             </div>
             
             <div class="chat-messages" id="messages"></div>
