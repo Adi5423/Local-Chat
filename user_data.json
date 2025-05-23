@@ -1,64 +1,50 @@
 {
   "0000001": {
-    "username": "are"
+    "username": "Old",
+    "relationInt": 2
   },
   "0000002": {
-    "username": "qwq"
+    "username": "New",
+    "relationInt": 2
   },
   "0000003": {
-    "username": "User2",
-    "relationInt": 2
+    "username": "Hey",
+    "relationInt": 0
   },
   "0000004": {
-    "username": "User1",
-    "relationInt": 2
+    "username": "Bye",
+    "relationInt": 0
   },
   "0000005": {
-    "username": "We all",
-    "relationInt": 0
+    "username": "Newwwew",
+    "relationInt": 2
   },
   "0000006": {
-    "username": "eweew",
-    "relationInt": 0
+    "username": "Oldkkd",
+    "relationInt": 2
   },
   "0000007": {
-    "username": "wewew23",
-    "relationInt": 0
+    "username": "Ok",
+    "relationInt": 2
   },
   "0000008": {
-    "username": "UIO",
+    "username": "KL",
     "relationInt": 2
   },
   "0000009": {
-    "username": "Mae",
+    "username": "ok",
     "relationInt": 2
   },
   "0000010": {
-    "username": "Adii",
-    "relationInt": 2
-  },
-  "0000011": {
-    "username": "Amely",
-    "relationInt": 2
-  },
-  "0000012": {
-    "username": "Rok",
-    "relationInt": 0
-  },
-  "0000013": {
     "username": "we",
     "relationInt": 2
   },
-  "0000014": {
-    "username": "me",
+  "0000011": {
+    "username": "Adii",
     "relationInt": 2
   },
-  "0000015": {
-    "username": "wewe",
-    "relationInt": 0
-  },
-  "0000016": {
-    "username": "2323brbrg",
-    "relationInt": 1
+  "0000012": {
+    "username": "Amely",
+    "relationInt": 2
   }
 }
